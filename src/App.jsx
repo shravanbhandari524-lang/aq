@@ -85,9 +85,9 @@ export default function Index() {
   return (
     <div className="min-h-screen w-full overflow-x-hidden scroll-smooth bg-[#020617] text-white antialiased">
       <Hero active={active} />
-      <Pricing />
+   
       <Vision />
-      <About />
+      
       <Contact />
       <Footer />
     </div>
