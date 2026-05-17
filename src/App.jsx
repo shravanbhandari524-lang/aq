@@ -408,8 +408,40 @@ function About() {
     </section>
   );
 }
-
 function Contact() {
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
+
+  const EMAILJS_SERVICE_ID  = "service_xmljbsa";   // ← paste yours
+  const EMAILJS_TEMPLATE_ID = "template_1stlg9x";  // ← paste yours
+  const EMAILJS_PUBLIC_KEY  = "vWgWe9n-ZsTcljvBh";   // ← paste yours
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus("sending");
+
+    const data = new FormData(e.currentTarget);
+    const templateParams = {
+      from_name:    data.get("name"),
+      from_email:   data.get("email"),
+      message:      data.get("message"),
+      to_email:     CONTACT_EMAIL,
+    };
+
+    try {
+      await window.emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        EMAILJS_PUBLIC_KEY,
+      );
+      setStatus("sent");
+      e.target.reset();
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      setStatus("error");
+    }
+  };
+
   return (
     <section id="contact" className="relative w-full overflow-hidden bg-gradient-to-b from-[#020617] to-slate-950 py-20 md:py-32">
       <Parallax speed={0.05} className="pointer-events-none absolute inset-x-0 bottom-0 h-80 opacity-60">
@@ -421,23 +453,23 @@ function Contact() {
         <div className="mt-10 grid min-w-0 gap-6 sm:mt-14 md:grid-cols-2 md:gap-10">
           <form
             className="min-w-0 rounded-3xl border border-white/10 bg-white/[0.045] p-4 shadow-2xl shadow-cyan-950/20 backdrop-blur-xl transition-all duration-300 hover:border-cyan-300/25 hover:shadow-[0_0_48px_rgba(34,211,238,0.12)] sm:p-6 md:p-8"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const data = new FormData(e.currentTarget);
-              const subject = encodeURIComponent(`New enquiry from ${data.get("name") || "website"}`);
-              const body = encodeURIComponent(`${data.get("message")}\n\n— ${data.get("name")} (${data.get("email")})`);
-              window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-            }}
+            onSubmit={handleSubmit}
           >
             <Field label="Name" name="name" placeholder="Your name" />
             <Field label="Email" name="email" type="email" placeholder="you@company.com" />
             <Field label="Message" name="message" placeholder="What are you building?" textarea />
             <button
               type="submit"
-              className="mt-2 min-h-12 w-full rounded-full bg-white px-5 py-3 text-center text-sm font-semibold text-slate-950 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-cyan-500/20"
+              disabled={status === "sending" || status === "sent"}
+              className="mt-2 min-h-12 w-full rounded-full bg-white px-5 py-3 text-center text-sm font-semibold text-slate-950 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-cyan-500/20 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
             >
-              Send message
+              {status === "sending" ? "Sending…" : status === "sent" ? "Message sent ✓" : "Send message"}
             </button>
+            {status === "error" && (
+              <p className="mt-3 text-center text-sm text-red-400">
+                Something went wrong. Please try emailing us directly.
+              </p>
+            )}
           </form>
           <div className="group relative flex min-w-0 flex-col justify-between overflow-hidden rounded-3xl border border-cyan-200/20 bg-[linear-gradient(145deg,rgba(8,47,73,0.72),rgba(2,6,23,0.92)_52%,rgba(3,7,18,0.98))] p-5 text-white shadow-[0_0_52px_rgba(34,211,238,0.16)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-cyan-200/40 hover:shadow-[0_0_70px_rgba(34,211,238,0.24)] sm:p-8">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,rgba(34,211,238,0.2),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.09),transparent_36%)] opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
@@ -470,7 +502,6 @@ function Contact() {
     </section>
   );
 }
-
 function Field({ label, name, type = "text", placeholder, textarea }) {
   const base =
     "mt-1.5 block min-h-11 w-full min-w-0 rounded-lg border border-white/10 bg-slate-950/80 px-3.5 py-2.5 text-base text-white outline-none transition-colors placeholder:text-slate-500 focus:border-cyan-300 sm:text-sm";
