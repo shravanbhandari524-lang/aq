@@ -411,9 +411,9 @@ function About() {
 function Contact() {
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
 
-  const EMAILJS_SERVICE_ID  = "service_xmljbsa";   // ← paste yours
-  const EMAILJS_TEMPLATE_ID = "template_1stlg9x";  // ← paste yours
-  const EMAILJS_PUBLIC_KEY  = "vWgWe9n-ZsTcljvBh";   // ← paste yours
+  const EMAILJS_SERVICE_ID  = "service_p0mu0zs";   // ← paste yours
+  const EMAILJS_TEMPLATE_ID = "template_qsc5r7w";  // ← paste yours
+  const EMAILJS_PUBLIC_KEY  = "EkjZ185_h89XKymfG";   // ← paste yours
 
   const handleSubmit = async (e) => {
     e.preventDefault();
