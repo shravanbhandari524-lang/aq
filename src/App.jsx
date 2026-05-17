@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-
+import emailjs from "@emailjs/browser";
 const COMPANY_NAME = "AQUAVERN Technologies";
 const BRAND_WORDMARK = "AQUAVERN";
 const CONTACT_EMAIL = "aquaverntechnologies@gmail.com";
@@ -428,7 +428,7 @@ function Contact() {
     };
 
     try {
-      await window.emailjs.send(
+      await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         templateParams,
